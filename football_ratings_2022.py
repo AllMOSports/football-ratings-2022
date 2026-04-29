@@ -103,6 +103,10 @@ def build_id_to_classname(team_to_class, schools_csv=SCHOOLS_CSV):
         "156": "Paris with Faith Walk, Madison",
         "206": "Vashon with Miller Career Academy",
         "501": "Winfield with Elsberry",
+        "953": "Battle with Columbia Independent",
+        "189": "Roosevelt with Carnahan",
+        "443": "Skyline with Macks Creek",
+        "479": "University Academy Charter with Ewing Marion Kauffman",
     }
  
     df = pd.read_csv(schools_csv)
