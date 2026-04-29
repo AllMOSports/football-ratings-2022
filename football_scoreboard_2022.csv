@@ -1,5 +1,6 @@
 Date,Home Team,Home Score,Away Team,Away Score
 2022-08-26,Seneca,44,Aurora,8
+2022-08-26,Park Hill,68,Battle with Columbia Independent,38
 2022-08-26,Principia with Whitfield,7,Bayless,14
 2022-08-26,Excelsior Springs,11,Belton,21
 2022-08-26,DeSoto,42,Bishop DuBourg with Hancock,12
@@ -139,7 +140,8 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-08-27,Confluence Prep Academy Charter with Grand Center Arts Charter,0,Normandy Collaborative,44
 2022-08-27,Grandview (Hillsboro),33,"Paris with Faith Walk, Madison",13
 2022-08-27,Hazelwood West,0,Priory,21
-2022-08-27,University Academy Charter,16,Southeast,0
+2022-08-27,Jennings,22,Roosevelt with Carnahan,14
+2022-08-27,University Academy Charter with Ewing Marion Kauffman,16,Southeast,0
 2022-08-27,Riverview Gardens,34,University City,42
 2022-08-27,Ladue Horton Watkins,64,Westminster Christian Academy,7
 2022-09-01,Webb City,47,Carl Junction,7
@@ -151,6 +153,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-01,McCluer North,0,Parkway North,43
 2022-09-01,North County,36,St. Clair,32
 2022-09-01,Ritenour,46,Webster Groves,3
+2022-09-02,Capital City,41,Battle with Columbia Independent,32
 2022-09-02,Central (St. Joseph),47,Benton,13
 2022-09-02,St. Pius X (Festus),47,Bishop DuBourg with Hancock,0
 2022-09-02,Lutheran North,0,Blair Oaks,35
@@ -159,7 +162,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-02,Carthage,49,Branson,0
 2022-09-02,Forsyth,35,Buffalo,60
 2022-09-02,Sherwood,13,Butler,50
-2022-09-02,Skyline,0,Cabool,38
+2022-09-02,Skyline with Macks Creek,0,Cabool,38
 2022-09-02,Vashon with Miller Career Academy,7,Cardinal Ritter,29
 2022-09-02,Salisbury,66,Carrollton,6
 2022-09-02,Central (Park Hills),58,Caruthersville,21
@@ -287,6 +290,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-02,Orchard Farm,7,Wright City,21
 2022-09-03,Chaminade College Prep,19,MICDS,42
 2022-09-03,Mt. Vernon,14,Monett,6
+2022-09-03,Soldan International Studies with Sumner,6,Roosevelt with Carnahan,14
 2022-09-08,Francis Howell,42,Lutheran North,21
 2022-09-08,East Newton,0,Nevada,68
 2022-09-08,Holt,33,Washington,7
@@ -327,7 +331,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-09,Versailles,14,Eldon,75
 2022-09-09,Kirkwood,30,Eureka,31
 2022-09-09,Winnetonka,7,Excelsior Springs,35
-2022-09-09,Skyline,18,Fair Grove,45
+2022-09-09,Skyline with Macks Creek,18,Fair Grove,45
 2022-09-09,St. Charles,0,Francis Howell North,35
 2022-09-09,Valle Catholic,59,Fredericktown,0
 2022-09-09,Ft. Zumwalt North,37,Ft. Zumwalt East,0
@@ -336,6 +340,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-09,Rolla,13,Glendale,32
 2022-09-09,Raytown South,31,Grandview,56
 2022-09-09,Boonville,59,Hallsville,58
+2022-09-09,Battle with Columbia Independent,16,Helias Catholic,58
 2022-09-09,Jefferson (Festus),8,Herculaneum,16
 2022-09-09,Monroe City,46,Highland,8
 2022-09-09,Clinton,12,Holden,41
@@ -424,6 +429,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-09,Moberly,39,Winfield with Elsberry,21
 2022-09-09,Mark Twain,6,Wright City,21
 2022-09-10,Northeast (Kansas City),30,Central (Kansas City),20
+2022-09-10,Roosevelt with Carnahan,6,Gateway,30
 2022-09-10,Marquette,23,Hazelwood Central,7
 2022-09-10,Normandy Collaborative,0,Hazelwood East,36
 2022-09-10,Chaffee,14,Kelly,26
@@ -432,7 +438,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-10,Lutheran South,16,Priory,28
 2022-09-10,Lafayette (Wildwood),62,Riverview Gardens,24
 2022-09-10,Hannibal,40,Troy Buchanan,42
-2022-09-10,East (Kansas City),16,University Academy Charter,64
+2022-09-10,East (Kansas City),16,University Academy Charter with Ewing Marion Kauffman,64
 2022-09-10,MICDS,59,Westminster Christian Academy,20
 2022-09-15,Riverview Gardens,6,Jennings,41
 2022-09-16,Wellington-Napoleon,6,Adrian,28
@@ -462,7 +468,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-16,Miller,22,Diamond,38
 2022-09-16,St. Francis Borgia,33,Duchesne,41
 2022-09-16,Cassville,35,East Newton,0
-2022-09-16,University Academy Charter,50,El Dorado Springs,6
+2022-09-16,University Academy Charter with Ewing Marion Kauffman,50,El Dorado Springs,6
 2022-09-16,Sikeston,15,Farmington,48
 2022-09-16,Westran,18,Fayette,21
 2022-09-16,DeSoto,7,Festus,56
@@ -482,6 +488,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-16,Warrensburg,24,Harrisonville,28
 2022-09-16,Cardinal Ritter,40,Helias Catholic,14
 2022-09-16,Cuba,22,Hermann,62
+2022-09-16,Battle with Columbia Independent,47,Hickman,29
 2022-09-16,Glendale,60,Hillcrest,22
 2022-09-16,North County,10,Hillsboro,31
 2022-09-16,Butler,22,Holden,30
@@ -540,11 +547,12 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-16,Van Horn,7,Richmond,18
 2022-09-16,Capital City,28,Rock Bridge,35
 2022-09-16,West Plains,28,Rolla,7
+2022-09-16,Liberty (Wentzville),63,Roosevelt with Carnahan,8
 2022-09-16,Scotland County,7,Salisbury,48
 2022-09-16,Lafayette (St. Joseph),0,Savannah,69
 2022-09-16,Lamar,33,Seneca,36
 2022-09-16,Warsaw,26,Sherwood,6
-2022-09-16,Buffalo,64,Skyline,39
+2022-09-16,Buffalo,64,Skyline with Macks Creek,39
 2022-09-16,Vashon with Miller Career Academy,15,SLUH,43
 2022-09-16,Ruskin,6,Smithville,54
 2022-09-16,Wright City,40,South Callaway,24
@@ -621,7 +629,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-23,Smithville,42,Excelsior Springs,8
 2022-09-23,Stockton with Sheldon,14,Fair Grove,50
 2022-09-23,Bishop DuBourg with Hancock,0,Father Tolton,63
-2022-09-23,Skyline,34,Forsyth,35
+2022-09-23,Skyline with Macks Creek,34,Forsyth,35
 2022-09-23,Seckman,49,Fox,14
 2022-09-23,Timberland,49,Francis Howell Central,19
 2022-09-23,Moberly,28,Fulton,14
@@ -662,6 +670,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-23,Seneca,55,Monett,20
 2022-09-23,Nevada,36,Mt. Vernon,23
 2022-09-23,Joplin,35,Nixa,49
+2022-09-23,Battle with Columbia Independent,44,North County,48
 2022-09-23,Ft. Zumwalt South,25,North Point,15
 2022-09-23,Marquette,41,Northwest (Cedar Hill),0
 2022-09-23,Clinton,12,Oak Grove,49
@@ -723,12 +732,15 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-24,MICDS,44,John Burroughs,3
 2022-09-24,Hazelwood East,14,McCluer,8
 2022-09-24,McCluer North,13,Ritenour,42
+2022-09-24,Vashon with Miller Career Academy,62,Roosevelt with Carnahan,0
 2022-09-24,Chaminade College Prep,34,Soldan International Studies with Sumner,0
-2022-09-24,Pembroke Hill,27,University Academy Charter,40
+2022-09-24,Pembroke Hill,27,University Academy Charter with Ewing Marion Kauffman,40
 2022-09-24,Priory,42,Westminster Christian Academy,26
 2022-09-30,University City,28,Affton,34
 2022-09-30,Houston,12,Ava,6
+2022-09-30,Smith-Cotton,15,Battle with Columbia Independent,50
 2022-09-30,Grain Valley,44,Belton,0
+2022-09-30,Roosevelt with Carnahan,52,Bishop DuBourg with Hancock,36
 2022-09-30,Versailles,6,Blair Oaks,65
 2022-09-30,Lee's Summit West,7,Blue Springs South,10
 2022-09-30,California,12,Boonville,28
@@ -742,7 +754,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-30,Dexter,38,Caruthersville,20
 2022-09-30,Portageville,50,Chaffee,7
 2022-09-30,Centralia,28,Clark County,18
-2022-09-30,Skyline,44,Clever,7
+2022-09-30,Skyline with Macks Creek,44,Clever,7
 2022-09-30,Crest Ridge with Chilhowee,32,Cole Camp,55
 2022-09-30,St. Pius X (Festus),58,Cuba,6
 2022-09-30,Jennings,0,Duchesne,54
@@ -845,7 +857,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-09-30,St. Clair,34,St. James,6
 2022-09-30,Potosi,12,Ste. Genevieve,26
 2022-09-30,Fair Grove,18,Strafford,45
-2022-09-30,University Academy Charter,28,Summit Christian Academy,14
+2022-09-30,University Academy Charter with Ewing Marion Kauffman,28,Summit Christian Academy,14
 2022-09-30,Troy Buchanan,44,Timberland,12
 2022-09-30,Windsor,28,Tipton,21
 2022-09-30,Warrenton,14,Union,55
@@ -880,6 +892,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-07,Jennings,24,Affton,28
 2022-10-07,Clever,14,Ash Grove,48
 2022-10-07,Reeds Spring,44,Aurora,7
+2022-10-07,Rock Bridge,48,Battle with Columbia Independent,35
 2022-10-07,Brentwood,48,Bishop DuBourg with Hancock,16
 2022-10-07,Liberty North,41,Blue Springs South,7
 2022-10-07,Waynesville,26,Bolivar,34
@@ -1018,8 +1031,8 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-08,Mehlville,14,McCluer,12
 2022-10-08,Lutheran South,13,MICDS,54
 2022-10-08,McCluer North,6,Normandy Collaborative,42
-2022-10-08,Central (Springfield),31,Skyline,6
-2022-10-08,Central (Kansas City),0,University Academy Charter,38
+2022-10-08,Central (Springfield),31,Skyline with Macks Creek,6
+2022-10-08,Central (Kansas City),0,University Academy Charter with Ewing Marion Kauffman,38
 2022-10-08,Hazelwood East,49,University City,8
 2022-10-08,Gateway,0,Vashon with Miller Career Academy,40
 2022-10-13,Potosi,14,North County,45
@@ -1070,6 +1083,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-14,Carrollton,0,Holden,52
 2022-10-14,Jackson,21,Holt,34
 2022-10-14,Ste. Genevieve,41,Jefferson (Festus),34
+2022-10-14,Battle with Columbia Independent,41,Jefferson City,48
 2022-10-14,Grandview,12,Kearney,63
 2022-10-14,Portageville,42,Kelly,0
 2022-10-14,Poplar Bluff,35,Kennett,14
@@ -1143,11 +1157,11 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-14,Ft. Zumwalt West,10,Troy Buchanan,45
 2022-10-14,Capital City,49,Truman,6
 2022-10-14,St. James,0,Union,46
-2022-10-14,University Academy Charter,0,Van Horn,23
+2022-10-14,University Academy Charter with Ewing Marion Kauffman,0,Van Horn,23
 2022-10-14,Louisiana,36,Van-Far,6
 2022-10-14,Boonville,20,Versailles,21
 2022-10-14,Orchard Farm,25,Warrenton,35
-2022-10-14,Skyline,6,Warsaw,27
+2022-10-14,Skyline with Macks Creek,6,Warsaw,27
 2022-10-14,North Point,15,Washington,56
 2022-10-14,Rolla,21,Waynesville,20
 2022-10-14,North Platte,18,West Platte,7
@@ -1165,6 +1179,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-15,Affton,36,Normandy Collaborative,42
 2022-10-15,Herculaneum,20,Perryville,22
 2022-10-15,Principia with Whitfield,0,Priory,50
+2022-10-15,John Burroughs,42,Roosevelt with Carnahan,14
 2022-10-15,Confluence Prep Academy Charter with Grand Center Arts Charter,20,Salisbury,46
 2022-10-15,Clayton,0,University City,21
 2022-10-15,Vianney,8,Valle Catholic,49
@@ -1215,6 +1230,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-21,Winfield with Elsberry,20,Fulton,28
 2022-10-21,Raytown,14,Grain Valley,28
 2022-10-21,Chaffee,21,Grandview (Hillsboro),26
+2022-10-21,Battle with Columbia Independent,21,Hannibal,27
 2022-10-21,Vianney,13,Helias Catholic,59
 2022-10-21,Union,21,Hermann,14
 2022-10-21,Parkview,40,Hillcrest,33
@@ -1282,14 +1298,14 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-21,Harrisburg,56,Scotland County,6
 2022-10-21,Webster Groves,6,Seckman,48
 2022-10-21,Nevada,49,Seneca,14
-2022-10-21,Strafford,62,Skyline,14
+2022-10-21,Strafford,62,Skyline with Macks Creek,14
 2022-10-21,Hogan Prep Academy Charter,8,Smith-Cotton,47
 2022-10-21,Grandview,8,Smithville,50
 2022-10-21,Blair Oaks,63,Southern Boone,6
 2022-10-21,Marshfield,38,Springfield Catholic,7
 2022-10-21,North Point,20,St. Charles,55
 2022-10-21,Owensville,6,St. Clair,21
-2022-10-21,University Academy Charter,0,St. Michael the Archangel,41
+2022-10-21,University Academy Charter with Ewing Marion Kauffman,0,St. Michael the Archangel,41
 2022-10-21,Perryville,18,St. Pius X (Festus),27
 2022-10-21,Kelly,14,Ste. Genevieve,42
 2022-10-21,Pleasant Hill,63,Summit Christian Academy,14
@@ -1309,6 +1325,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-22,Priory,0,Lift for Life Academy Charter,40
 2022-10-22,McCluer North,14,McCluer,34
 2022-10-22,Confluence Prep Academy Charter with Grand Center Arts Charter,12,Principia with Whitfield,20
+2022-10-22,Gateway,26,Roosevelt with Carnahan,20
 2022-10-22,Vashon with Miller Career Academy,40,Soldan International Studies with Sumner,14
 2022-10-22,Ritenour,48,University City,6
 2022-10-22,St. Dominic,42,Westminster Christian Academy,7
@@ -1355,13 +1372,14 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-28,East Newton,7,Hollister,37
 2022-10-28,Clever,0,Mt. Vernon,65
 2022-10-28,Springfield Catholic,21,Forsyth,22
-2022-10-28,Skyline,46,Stockton with Sheldon,47
+2022-10-28,Skyline with Macks Creek,46,Stockton with Sheldon,47
 2022-10-28,El Dorado Springs,0,Warsaw,21
 2022-10-28,Versailles,14,Fair Grove,48
 2022-10-28,Pembroke Hill,44,Knob Noster,0
 2022-10-28,Potosi,19,Kennett,26
 2022-10-28,Fredericktown,15,Central (Park Hills),69
 2022-10-28,Dexter,17,Ste. Genevieve,56
+2022-10-28,Roosevelt with Carnahan,34,Lutheran South,21
 2022-10-28,Bayless,24,Herculaneum,28
 2022-10-28,Oak Grove,56,Northeast (Kansas City),12
 2022-10-28,Summit Christian Academy,16,Odessa,70
@@ -1411,6 +1429,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-28,Francis Howell Central,0,Ft. Zumwalt North,35
 2022-10-28,Washington,19,Timberland,42
 2022-10-28,Liberty (Wentzville),13,Helias Catholic,55
+2022-10-28,Battle with Columbia Independent,34,Capital City,14
 2022-10-28,Rolla,27,Glendale,25
 2022-10-28,Branson,0,Lebanon,40
 2022-10-28,Waynesville,18,Central (Springfield),0
@@ -1436,7 +1455,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-10-29,Kelly,13,Priory,26
 2022-10-29,Southeast,7,Hogan Prep Academy Charter,42
 2022-10-29,Bishop DuBourg with Hancock,26,University City,61
-2022-10-29,Central (Kansas City),0,University Academy Charter,70
+2022-10-29,Central (Kansas City),0,University Academy Charter with Ewing Marion Kauffman,70
 2022-10-29,Wright City,42,Normandy Collaborative,32
 2022-10-29,Confluence Prep Academy Charter with Grand Center Arts Charter,0,Vashon with Miller Career Academy,70
 2022-10-29,McCluer North,0,McCluer,30
@@ -1465,6 +1484,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-11-04,Pembroke Hill,26,St. Michael the Archangel,0
 2022-11-04,Kennett,6,Valle Catholic,58
 2022-11-04,Ste. Genevieve,0,Central (Park Hills),35
+2022-11-04,Roosevelt with Carnahan,0,Cardinal Ritter,64
 2022-11-04,Oak Grove,24,Pleasant Hill,53
 2022-11-04,St. Pius X (Kansas City),21,Maryville,38
 2022-11-04,Chillicothe,7,Savannah,42
@@ -1500,6 +1520,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-11-04,Francis Howell North,12,Francis Howell,56
 2022-11-04,Ft. Zumwalt North,45,Ft. Zumwalt West,28
 2022-11-04,Timberland,21,Holt,0
+2022-11-04,Battle with Columbia Independent,14,Helias Catholic,45
 2022-11-04,Waynesville,12,Lebanon,53
 2022-11-04,Kirkwood,3,Christian Brothers College,41
 2022-11-04,Seckman,14,Marquette,42
@@ -1520,7 +1541,7 @@ Date,Home Team,Home Score,Away Team,Away Score
 2022-11-05,Fair Grove,22,Warsaw,14
 2022-11-05,Hogan Prep Academy Charter,12,Holden,52
 2022-11-05,Herculaneum,14,University City,20
-2022-11-05,Odessa,55,University Academy Charter,12
+2022-11-05,Odessa,55,University Academy Charter with Ewing Marion Kauffman,12
 2022-11-05,Cassville,7,Reeds Spring,14
 2022-11-05,McCluer,6,Hazelwood East,12
 2022-11-05,Lafayette (Wildwood),46,MICDS,60
