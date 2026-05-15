@@ -21,7 +21,37 @@ CLASSIFICATIONS_PATH  = "classifications.json"
 SCHOOLS_CSV           = "mshsaa_schools.csv"
 ITERATIONS            = 1000
 LEARNING_RATE         = 0.1
-COMPETITIVE_THRESHOLD = 35
+COMPETITIVE_THRESHOLD = 40
+ 
+# ---------------------------------------------------------------------------
+# MANUAL GAMES (not listed on MSHSAA Scoreboard)
+# ---------------------------------------------------------------------------
+# Add any games missing from the MSHSAA scoreboard here.
+# Format: ("YYYY-MM-DD", "Team 1 Name", score1, "Team 2 Name", score2)
+# Team names must match exactly the names in classifications.json.
+ 
+MANUAL_GAMES = [
+    ("2022-09-07", "Cardinal Ritter", 27, "Lutheran North", 13),
+    ("2022-09-13", "Cardinal Ritter", 53, "St. Dominic", 14),
+    ("2022-09-21", "Cardinal Ritter", 48, "Helias Catholic", 14),
+    ("2022-09-27", "Cardinal Ritter", 70, "Father Tolton", 14),
+    ("2022-10-04", "Cardinal Ritter", 46, "St. Mary's South Side", 20),
+    ("2022-10-11", "Cardinal Ritter", 54, "St. Francis Borgia", 8),
+]
+ 
+# ---------------------------------------------------------------------------
+# EXCLUDED GAMES (games to remove from rankings)
+# ---------------------------------------------------------------------------
+# Add any games you want to exclude from the ratings engine here.
+# Format: ("YYYY-MM-DD", "Team 1 Name", "Team 2 Name")
+# Team order does not matter — both directions are checked.
+ 
+EXCLUDED_GAMES = [
+    ("2022-08-30", "Bishop DuBourg with Hancock", "Jefferson (Festus)"),
+    ("2022-08-30", "Ladue Horton Watkins", "Ritenour"),
+    ("2022-11-01", "Lincoln", "Pleasant Hope"),
+    ("2022-11-01", "Duchesne", "Cardinal Ritter"),
+]
  
 HEADERS = {
     "User-Agent": (
@@ -67,8 +97,8 @@ def build_id_to_classname(team_to_class, schools_csv=SCHOOLS_CSV):
     """
     MANUAL_OVERRIDES = {
         "271": "Clopton with Elsberry",
+        "331": "King City with Pattonsburg",
         "126": "Lockwood with Golden City",
-        "568": "McAuley Catholic with New Heights Christian",
         "421": "Princeton with Mercer",
         "424": "Rich Hill with Hume",
         "431": "Salisbury",
@@ -77,8 +107,11 @@ def build_id_to_classname(team_to_class, schools_csv=SCHOOLS_CSV):
         "193": "Slater",
         "194": "Smith-Cotton",
         "197": "South Callaway",
+        "549": "St. Mary's South Side",
+        "463": "Stockton",
         "207": "Sullivan",
         "208": "Sumner",
+        "469": "Sweet Springs with Malta Bend",
         "198": "Truman",
         "479": "University Academy Charter",
         "204": "Van Horn",
@@ -87,26 +120,11 @@ def build_id_to_classname(team_to_class, schools_csv=SCHOOLS_CSV):
         "275": "Drexel with Miami (Amoret)",
         "575": "Renaissance Academy Charter",
         "172": "St. James",
-        "240": "Braymer with Breckenridge",
-        "525": "John F. Kennedy with Valley Park",
-        "331": "King City with Union Star",
+        "35": "DeSoto with Kingston",
+        "917": "Father Tolton with Calvary Lutheran",
         "342": "Liberal with Bronaugh",
-        "549": "St. Mary's South Side",
-        "509": "Bishop DuBourg with Hancock",
-        "156": "Paris with Faith Walk",
-        "463": "Stockton with Sheldon",
-        "208": "Sumner with Transportation and Law",
-        "195": "Soldan International Studies with Sumner",
-        "572": "St. Joseph Christian with Northland Christian",
-        "430": "Russellville",
-        "469": "Sweet Springs with Malta Bend",
-        "156": "Paris with Faith Walk, Madison",
-        "206": "Vashon with Miller Career Academy",
-        "501": "Winfield with Elsberry",
-        "953": "Battle with Columbia Independent",
-        "189": "Roosevelt with Carnahan",
-        "443": "Skyline with Macks Creek",
-        "479": "University Academy Charter with Ewing Marion Kauffman",
+        "776": "Transportation and Law with Beaumont",
+        "483": "Van-Far with Community",
     }
  
     df = pd.read_csv(schools_csv)
@@ -286,6 +304,28 @@ def deduplicate_games(all_games):
         print(f"  No duplicates found. {len(unique_games)} games.")
  
     return unique_games
+ 
+ 
+def exclude_games(all_games, excluded):
+    """
+    Remove specific games from the dataset before ratings are calculated.
+    Matching is done by date and both team names (order-independent).
+    Games are still saved to the scoreboard CSV — they are only excluded
+    from the ratings engine.
+    """
+    excluded_keys = {
+        (date_str, frozenset([t1, t2]))
+        for date_str, t1, t2 in excluded
+    }
+ 
+    filtered = [
+        g for g in all_games
+        if (g[0], frozenset([g[1], g[3]])) not in excluded_keys
+    ]
+ 
+    removed = len(all_games) - len(filtered)
+    print(f"  Excluded {removed} game(s) from ratings.")
+    return filtered
  
  
 def report_missing_teams(all_games, team_to_class):
@@ -498,6 +538,82 @@ def save_class_jsons(off_rating, def_rating, ovr_rating, league_avg,
  
  
 # ---------------------------------------------------------------------------
+# CSV RANKINGS OUTPUT
+# ---------------------------------------------------------------------------
+ 
+def save_rankings_csv(off_rating, def_rating, ovr_rating,
+                      team_to_class, team_to_district,
+                      class_filter=None):
+    """
+    Save a rankings CSV for either all teams (class_filter=None) or a
+    specific class.  Rankings (OFF Rank, DEF Rank, OVR Rank) are computed
+    within the pool so class CSVs show class-specific ranks.
+ 
+    Columns: School, OFF Rating, DEF Rating, OVR Rating,
+             OFF Rank, DEF Rank, OVR Rank
+    """
+    all_teams = list(ovr_rating.keys())
+ 
+    pool = (
+        [t for t in all_teams if team_to_class.get(t) == class_filter]
+        if class_filter is not None
+        else all_teams
+    )
+ 
+    if not pool:
+        label = f"Class {class_filter}" if class_filter else "Overall"
+        print(f"  {label}: no teams — skipping CSV.")
+        return
+ 
+    ovr_sorted = sorted(pool, key=lambda t: ovr_rating[t], reverse=True)
+    off_sorted = sorted(pool, key=lambda t: off_rating[t], reverse=True)
+    def_sorted = sorted(pool, key=lambda t: def_rating[t], reverse=True)
+ 
+    ovr_rank = {t: i + 1 for i, t in enumerate(ovr_sorted)}
+    off_rank = {t: i + 1 for i, t in enumerate(off_sorted)}
+    def_rank = {t: i + 1 for i, t in enumerate(def_sorted)}
+ 
+    rows = [
+        {
+            "School":      t,
+            "OFF Rating":  round(off_rating[t], 2),
+            "DEF Rating":  round(def_rating[t], 2),
+            "OVR Rating":  round(ovr_rating[t], 2),
+            "OFF Rank":    off_rank[t],
+            "DEF Rank":    def_rank[t],
+            "OVR Rank":    ovr_rank[t],
+        }
+        for t in ovr_sorted
+    ]
+ 
+    df = pd.DataFrame(rows, columns=[
+        "School", "OFF Rating", "DEF Rating", "OVR Rating",
+        "OFF Rank", "DEF Rank", "OVR Rank"
+    ])
+ 
+    if class_filter is None:
+        path  = "football_rankings_2022_all.csv"
+        label = "All teams"
+    else:
+        path  = f"football_rankings_2022_class{class_filter}.csv"
+        label = f"Class {class_filter}"
+ 
+    df.to_csv(path, index=False)
+    print(f"  {label}: {len(df)} teams — {path}")
+ 
+ 
+def save_all_rankings_csvs(off_rating, def_rating, ovr_rating,
+                           team_to_class, team_to_district):
+    """Save overall + one CSV per class (1-6)."""
+    save_rankings_csv(off_rating, def_rating, ovr_rating,
+                      team_to_class, team_to_district,
+                      class_filter=None)
+    for cls in range(1, 7):
+        save_rankings_csv(off_rating, def_rating, ovr_rating,
+                          team_to_class, team_to_district,
+                          class_filter=cls)
+ 
+# ---------------------------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------------------------
  
@@ -519,8 +635,16 @@ if __name__ == "__main__":
         print("No games found — exiting.")
         exit(1)
  
+    if MANUAL_GAMES:
+        print(f"\nAdding {len(MANUAL_GAMES)} manual game(s)...")
+        all_games.extend(MANUAL_GAMES)
+ 
     print("\nDeduplicating games...")
     all_games = deduplicate_games(all_games)
+ 
+    if EXCLUDED_GAMES:
+        print(f"\nExcluding {len(EXCLUDED_GAMES)} game(s) from ratings...")
+        all_games = exclude_games(all_games, EXCLUDED_GAMES)
  
     print("\nChecking for missing teams...")
     report_missing_teams(all_games, team_to_class)
@@ -539,5 +663,9 @@ if __name__ == "__main__":
     print("\nSaving per-class ratings JSONs...")
     save_class_jsons(off_rating, def_rating, ovr_rating, league_avg,
                      team_to_class, team_to_district)
+ 
+    print("\nSaving rankings CSVs...")
+    save_all_rankings_csvs(off_rating, def_rating, ovr_rating,
+                           team_to_class, team_to_district)
  
     print("\n=== Done ===")
