@@ -11,17 +11,23 @@ import time
 # CONFIGURATION
 # ---------------------------------------------------------------------------
  
+SEASON_YEAR   = 2022
 SEASON_START  = date(2022, 8, 1)
 SEASON_END    = date(2022, 12, 15)
 BASE_URL      = "https://www.mshsaa.org/activities/scoreboard.aspx?alg=19&date={}"
 MAX_POINTS    = 100
-OUTPUT_PATH   = "football_ratings_2022.json"
-CSV_PATH      = "football_scoreboard_2022.csv"
+OUTPUT_PATH   = f"football_ratings_{SEASON_YEAR}.json"
+CSV_PATH      = f"football_scoreboard_{SEASON_YEAR}.csv"
 CLASSIFICATIONS_PATH  = "classifications.json"
 SCHOOLS_CSV           = "mshsaa_schools.csv"
 ITERATIONS            = 1000
 LEARNING_RATE         = 0.1
-COMPETITIVE_THRESHOLD = 40
+ 
+# --- v2 rating engine settings (soft weighting + shrinkage, replaces the
+#     old hard Phase-2 cutoff) ---
+COMPETITIVE_THRESHOLD = 40    # now the "half-weight" point of a smooth decay curve
+REGULARIZATION_K      = 3.0   # pseudo-games added to every team's denominator (shrinkage)
+MOV_CAP               = 28    # max points of "error" any single game can contribute
  
 # ---------------------------------------------------------------------------
 # MANUAL GAMES (not listed on MSHSAA Scoreboard)
@@ -31,26 +37,11 @@ COMPETITIVE_THRESHOLD = 40
 # Team names must match exactly the names in classifications.json.
  
 MANUAL_GAMES = [
-    ("2022-09-07", "Cardinal Ritter", 27, "Lutheran North", 13),
-    ("2022-09-13", "Cardinal Ritter", 53, "St. Dominic", 14),
-    ("2022-09-21", "Cardinal Ritter", 48, "Helias Catholic", 14),
-    ("2022-09-27", "Cardinal Ritter", 70, "Father Tolton", 14),
-    ("2022-10-04", "Cardinal Ritter", 46, "St. Mary's South Side", 20),
-    ("2022-10-11", "Cardinal Ritter", 54, "St. Francis Borgia", 8),
-]
- 
-# ---------------------------------------------------------------------------
-# EXCLUDED GAMES (games to remove from rankings)
-# ---------------------------------------------------------------------------
-# Add any games you want to exclude from the ratings engine here.
-# Format: ("YYYY-MM-DD", "Team 1 Name", "Team 2 Name")
-# Team order does not matter — both directions are checked.
- 
-EXCLUDED_GAMES = [
-    ("2022-08-30", "Bishop DuBourg with Hancock", "Jefferson (Festus)"),
-    ("2022-08-30", "Ladue Horton Watkins", "Ritenour"),
-    ("2022-11-01", "Lincoln", "Pleasant Hope"),
-    ("2022-11-01", "Duchesne", "Cardinal Ritter"),
+    # NOTE: These are manually-added 2011 games that don't appear on the
+    # MSHSAA scoreboard. The list has been cleared for 2022 since none of
+    # the 2011 entries apply to this season. Re-populate with any 2022
+    # games missing from the scraped scoreboard, in the same format:
+    # ("YYYY-MM-DD", "Team 1 Name", score1, "Team 2 Name", score2)
 ]
  
 HEADERS = {
@@ -63,6 +54,35 @@ HEADERS = {
     "Accept-Language": "en-US,en;q=0.5",
     "Referer": "https://www.mshsaa.org/"
 }
+ 
+# ---------------------------------------------------------------------------
+# HTTP SESSION (connection reuse + retry on transient failures)
+# ---------------------------------------------------------------------------
+# Days that timeout right at the 20s ceiling get one retry with a short
+# backoff before we give up on them. A shared Session reuses the underlying
+# TCP connection instead of opening a fresh one per request, which by
+# itself often reduces the frequency of these near-ceiling timeouts.
+ 
+def build_session():
+    from requests.adapters import HTTPAdapter
+    try:
+        from urllib3.util.retry import Retry
+    except ImportError:
+        from requests.packages.urllib3.util.retry import Retry
+ 
+    session = requests.Session()
+    retry = Retry(
+        total=1,                      # one retry after the first failure
+        connect=1,
+        read=1,
+        backoff_factor=1.5,           # short pause before the retry
+        status_forcelist=[500, 502, 503, 504],
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry, pool_connections=1, pool_maxsize=1)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
  
 # ---------------------------------------------------------------------------
 # CLASSIFICATIONS
@@ -205,14 +225,21 @@ def is_forfeit(c1, c2):
     return "forfeit" in (c1.get_text() + c2.get_text()).lower()
  
  
-def scrape_date(target_date, id_to_classname, known_teams):
+def scrape_date(target_date, id_to_classname, known_teams, session):
     url = BASE_URL.format(target_date.strftime("%m%d%Y"))
     try:
-        resp = requests.get(url, timeout=20, headers=HEADERS)
+        # (connect_timeout, read_timeout) -- 10s to connect, 25s to read.
+        # 25s (vs. the old flat 20s) gives borderline-slow responses (the
+        # ~20.6-20.9s ones you saw) a real chance to finish instead of
+        # being cut off right before they would have succeeded.
+        resp = session.get(url, timeout=(10, 25), headers=HEADERS)
         resp.raise_for_status()
+    except requests.exceptions.Timeout as e:
+        print(f"  TIMEOUT {target_date}: {e}")
+        return [], "timeout"
     except requests.RequestException as e:
         print(f"  Failed {target_date}: {e}")
-        return []
+        return [], "error"
  
     soup  = BeautifulSoup(resp.text, "html.parser")
     games = []
@@ -250,19 +277,48 @@ def scrape_date(target_date, id_to_classname, known_teams):
             name2, s2
         ))
  
-    return games
+    return games, None
  
  
 def scrape_full_season(id_to_classname, known_teams):
-    all_games = []
-    current   = SEASON_START
+    all_games     = []
+    current       = SEASON_START
+    scrape_t0     = time.perf_counter()
+    slow_days     = []   # (date, seconds) for anything taking > 3s
+    failed_days   = []   # (date, reason) for anything that never succeeded
+    session       = build_session()
+ 
     while current <= min(SEASON_END, date.today()):
+        day_t0 = time.perf_counter()
         print(f"  Scraping {current}...", end=" ", flush=True)
-        day_games = scrape_date(current, id_to_classname, known_teams)
+        day_games, fail_reason = scrape_date(current, id_to_classname, known_teams, session)
         all_games.extend(day_games)
-        print(f"{len(day_games)} games")
+        day_elapsed = time.perf_counter() - day_t0
+        print(f"{len(day_games)} games ({day_elapsed:.1f}s)")
+        if day_elapsed > 3.0:
+            slow_days.append((current, day_elapsed))
+        if fail_reason is not None:
+            failed_days.append((current, fail_reason))
         current += timedelta(days=1)
         time.sleep(0.5)
+ 
+    scrape_elapsed = time.perf_counter() - scrape_t0
+    print(f"\n  [TIMING] Scraping took {scrape_elapsed:.1f}s total "
+          f"for {len(all_games)} games.")
+    if slow_days:
+        print(f"  [TIMING] {len(slow_days)} slow day(s) (>3s each):")
+        for d, secs in slow_days:
+            print(f"    {d}: {secs:.1f}s")
+    if failed_days:
+        print(f"\n  *** {len(failed_days)} date(s) NEVER returned data, "
+              f"even after retry -- these dates may be missing real "
+              f"games. Check them manually against MSHSAA and add via "
+              f"MANUAL_GAMES if needed: ***")
+        for d, reason in failed_days:
+            print(f"    {d} ({reason})")
+    else:
+        print("  All dates returned successfully -- no known data gaps "
+              "from scraping failures.")
     return all_games
  
  
@@ -304,28 +360,6 @@ def deduplicate_games(all_games):
         print(f"  No duplicates found. {len(unique_games)} games.")
  
     return unique_games
- 
- 
-def exclude_games(all_games, excluded):
-    """
-    Remove specific games from the dataset before ratings are calculated.
-    Matching is done by date and both team names (order-independent).
-    Games are still saved to the scoreboard CSV — they are only excluded
-    from the ratings engine.
-    """
-    excluded_keys = {
-        (date_str, frozenset([t1, t2]))
-        for date_str, t1, t2 in excluded
-    }
- 
-    filtered = [
-        g for g in all_games
-        if (g[0], frozenset([g[1], g[3]])) not in excluded_keys
-    ]
- 
-    removed = len(all_games) - len(filtered)
-    print(f"  Excluded {removed} game(s) from ratings.")
-    return filtered
  
  
 def report_missing_teams(all_games, team_to_class):
@@ -370,56 +404,69 @@ def save_csv(all_games):
  
  
 # ---------------------------------------------------------------------------
-# RATING ENGINE
+# RATING ENGINE (v2 -- soft competitiveness weighting + shrinkage regularization)
 # ---------------------------------------------------------------------------
+#
+# Replaces the old two-phase (all games, then hard <=40pt cutoff) approach.
+# A dominant team no longer has its rating fully decided by 1-2 close games:
+#   1. competitiveness_weight() gives every game a smooth weight based on
+#      the current rating gap, instead of an all-or-nothing 40-point cutoff.
+#   2. REGULARIZATION_K shrinks updates for teams with little competitive
+#      signal, instead of letting a tiny sample fully drive their rating.
+#   3. MOV_CAP bounds how much error any single game -- even a fully-weighted
+#      one -- can contribute, so no one result can swing a rating too hard.
+ 
+def competitiveness_weight(gap, scale=COMPETITIVE_THRESHOLD):
+    """
+    Smooth weight in (0, 1] based on the current OVR gap between two teams.
+    gap=0            -> weight 1.0 (fully counted)
+    gap=scale (40)   -> weight 0.5 (half counted)
+    gap=2*scale (80) -> weight 0.2 (mostly discounted, never fully zero)
+    """
+    return 1.0 / (1.0 + (gap / scale) ** 2)
+ 
  
 def run_iterations(games, teams, off_rating, def_rating, league_avg,
-                   iterations, phase_label, ovr_filter=None):
+                   iterations, phase_label="Fit"):
     for iteration in range(iterations):
-        off_error    = {t: 0.0 for t in teams}
-        def_error    = {t: 0.0 for t in teams}
-        games_played = {t: 0   for t in teams}
+        off_error  = {t: 0.0 for t in teams}
+        def_error  = {t: 0.0 for t in teams}
+        weight_sum = {t: 0.0 for t in teams}
  
-        eligible_games = games
-        if ovr_filter is not None:
-            eligible_games = [
-                (t1, t2, s1, s2) for t1, t2, s1, s2 in games
-                if abs((off_rating[t1] + def_rating[t1]) -
-                       (off_rating[t2] + def_rating[t2])) <= ovr_filter
-            ]
+        for t1, t2, actual_s1, actual_s2 in games:
+            gap = abs((off_rating[t1] + def_rating[t1]) -
+                      (off_rating[t2] + def_rating[t2]))
+            w = competitiveness_weight(gap)
  
-        for t1, t2, actual_s1, actual_s2 in eligible_games:
             predicted_s1 = off_rating[t1] - def_rating[t2] + league_avg
             predicted_s2 = off_rating[t2] - def_rating[t1] + league_avg
  
             error_s1 = actual_s1 - predicted_s1
             error_s2 = actual_s2 - predicted_s2
  
-            off_error[t1] += error_s1
-            off_error[t2] += error_s2
-            def_error[t1] += -error_s2
-            def_error[t2] += -error_s1
+            # MOV cap: bound the raw error before it's weighted/accumulated
+            error_s1 = max(-MOV_CAP, min(MOV_CAP, error_s1))
+            error_s2 = max(-MOV_CAP, min(MOV_CAP, error_s2))
  
-            games_played[t1] += 1
-            games_played[t2] += 1
+            off_error[t1] += w * error_s1
+            off_error[t2] += w * error_s2
+            def_error[t1] += -w * error_s2
+            def_error[t2] += -w * error_s1
+ 
+            weight_sum[t1] += w
+            weight_sum[t2] += w
  
         for team in teams:
-            if games_played[team] > 0:
-                off_rating[team] += (
-                    (off_error[team] / games_played[team]) * LEARNING_RATE
-                )
-                def_rating[team] += (
-                    (def_error[team] / games_played[team]) * LEARNING_RATE
-                )
+            # Shrinkage: denominator is (weighted games) + K, not just raw
+            # games played. Teams with low competitive weight get smaller,
+            # more conservative updates instead of being fully driven by
+            # 1-2 games.
+            denom = weight_sum[team] + REGULARIZATION_K
+            off_rating[team] += (off_error[team] / denom) * LEARNING_RATE
+            def_rating[team] += (def_error[team] / denom) * LEARNING_RATE
  
         if (iteration + 1) % 100 == 0:
-            eligible_count = (
-                len(eligible_games) if ovr_filter is not None else len(games)
-            )
-            print(
-                f"  [{phase_label}] Iteration {iteration + 1}/{iterations} complete"
-                + (f" | Competitive games: {eligible_count}" if ovr_filter else "")
-            )
+            print(f"  [{phase_label}] Iteration {iteration + 1}/{iterations} complete")
  
  
 def calculate_ratings(all_games, iterations=ITERATIONS):
@@ -436,20 +483,17 @@ def calculate_ratings(all_games, iterations=ITERATIONS):
     off_rating = {t: 0.0 for t in teams}
     def_rating = {t: 0.0 for t in teams}
  
-    print(f"\n  Running Phase 1 ({iterations} iterations, all games)...")
+    print(f"\n  Running rating fit ({iterations} iterations, soft-weighted "
+          f"by competitiveness [scale={COMPETITIVE_THRESHOLD}], "
+          f"shrinkage K={REGULARIZATION_K}, MOV cap={MOV_CAP})...")
+    print(f"  [TIMING] {len(teams)} teams, {len(games)} games going into the fit.")
+    engine_t0 = time.perf_counter()
     run_iterations(games, teams, off_rating, def_rating, league_avg,
-                   iterations=iterations, phase_label="Phase 1", ovr_filter=None)
- 
-    print(f"\n  Running Phase 2 ({iterations} iterations, "
-          f"competitive games within {COMPETITIVE_THRESHOLD} OVR pts)...")
-    run_iterations(games, teams, off_rating, def_rating, league_avg,
-                   iterations=iterations, phase_label="Phase 2",
-                   ovr_filter=COMPETITIVE_THRESHOLD)
+                   iterations=iterations, phase_label="Fit")
+    print(f"  [TIMING] Rating fit took {time.perf_counter() - engine_t0:.1f}s.")
  
     ovr_rating = {t: round(off_rating[t] + def_rating[t], 2) for t in teams}
     return off_rating, def_rating, ovr_rating, league_avg
- 
- 
 # ---------------------------------------------------------------------------
 # JSON OUTPUT
 # ---------------------------------------------------------------------------
@@ -520,7 +564,7 @@ def save_class_jsons(off_rating, def_rating, ovr_rating, league_avg,
             print(f"  Class {cls}: no teams found — skipping.")
             continue
  
-        path = f"football_ratings_2022_class{cls}.json"
+        path = f"football_ratings_{SEASON_YEAR}_class{cls}.json"
         output = {
             "last_updated":   datetime.now().strftime("%B %d, %Y at %I:%M %p"),
             "league_average": round(league_avg, 2),
@@ -535,6 +579,7 @@ def save_class_jsons(off_rating, def_rating, ovr_rating, league_avg,
             f"{e['ovr_rank']}. {e['school']} ({e['ovr_rating']:+.2f})"
             for e in entries[:3]
         ))
+ 
  
  
 # ---------------------------------------------------------------------------
@@ -592,10 +637,10 @@ def save_rankings_csv(off_rating, def_rating, ovr_rating,
     ])
  
     if class_filter is None:
-        path  = "football_rankings_2022_all.csv"
+        path  = f"football_rankings_{SEASON_YEAR}_all.csv"
         label = "All teams"
     else:
-        path  = f"football_rankings_2022_class{class_filter}.csv"
+        path  = f"football_rankings_{SEASON_YEAR}_class{class_filter}.csv"
         label = f"Class {class_filter}"
  
     df.to_csv(path, index=False)
@@ -618,7 +663,7 @@ def save_all_rankings_csvs(off_rating, def_rating, ovr_rating,
 # ---------------------------------------------------------------------------
  
 if __name__ == "__main__":
-    print("=== MSHSAA Football Ratings 2022 ===")
+    print(f"=== MSHSAA Football Ratings {SEASON_YEAR} ===")
  
     print("\nLoading classifications...")
     team_to_class, team_to_district = load_classifications()
@@ -641,10 +686,6 @@ if __name__ == "__main__":
  
     print("\nDeduplicating games...")
     all_games = deduplicate_games(all_games)
- 
-    if EXCLUDED_GAMES:
-        print(f"\nExcluding {len(EXCLUDED_GAMES)} game(s) from ratings...")
-        all_games = exclude_games(all_games, EXCLUDED_GAMES)
  
     print("\nChecking for missing teams...")
     report_missing_teams(all_games, team_to_class)
