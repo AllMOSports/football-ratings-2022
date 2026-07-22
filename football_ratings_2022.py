@@ -37,11 +37,25 @@ MOV_CAP               = 28    # max points of "error" any single game can contri
 # Team names must match exactly the names in classifications.json.
  
 MANUAL_GAMES = [
-    # NOTE: These are manually-added 2011 games that don't appear on the
-    # MSHSAA scoreboard. The list has been cleared for 2022 since none of
-    # the 2011 entries apply to this season. Re-populate with any 2022
-    # games missing from the scraped scoreboard, in the same format:
-    # ("YYYY-MM-DD", "Team 1 Name", score1, "Team 2 Name", score2)
+    # Added from 2022_Missing_Games.xlsx (games missing from MSHSAA scoreboard).
+    # TODO: the spreadsheet had no date column -- replace "2022-XX-XX" below
+    # with each game's actual date once you have it. Dates don't affect the
+    # rating math (calculate_ratings() ignores them entirely), but they do
+    # feed the scoreboard CSV and the dedup key, so they should be corrected
+    # before treating football_scoreboard_2022.csv as authoritative.
+    ("2022-08-01", "Brookfield", 48, "Palmyra", 20),
+    ("2022-08-01", "Clark County", 34, "Palmyra", 0),
+    ("2022-08-01", "Fayette", 46, "Russellville", 8),
+    ("2022-08-01", "Macon", 49, "Palmyra", 14),
+    ("2022-08-01", "Riverview Gardens", 52, "Affton", 32),
+    ("2022-08-01", "Riverview Gardens", 29, "Normandy Collaborative", 14),
+    ("2022-08-01", "Russellville", 35, "Carrollton", 14),
+    ("2022-08-01", "Russellville", 38, "Crystal City", 36),
+    ("2022-08-01", "Russellville", 34, "Diamond", 22),
+    ("2022-08-01", "Russellville", 42, "Scotland County", 13),
+    ("2022-08-01", "Russellville", 19, "Van-Far", 6),
+    ("2022-08-01", "Sherwood", 58, "Russellville", 41),
+    ("2022-08-01", "South Shelby", 31, "Palmyra", 6),
 ]
  
 HEADERS = {
